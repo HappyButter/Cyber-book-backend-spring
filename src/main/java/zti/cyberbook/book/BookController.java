@@ -1,11 +1,10 @@
 package zti.cyberbook.book;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/book")
@@ -22,5 +21,10 @@ public class BookController {
     @GetMapping("/all")
     List<Book> getAll() {
         return bookService.getAllBooks();
+    }
+
+    @PostMapping
+    Map<String, String> addBook(@RequestBody RequestBodyBookObject requestBodyBookObject) {
+        return bookService.addBook(requestBodyBookObject);
     }
 }

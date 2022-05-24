@@ -1,4 +1,4 @@
-package zti.cyberbook.book;
+package zti.cyberbook.author;
 
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;

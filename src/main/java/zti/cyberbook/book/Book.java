@@ -4,9 +4,12 @@ import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
+import zti.cyberbook.genre.Genre;
+import zti.cyberbook.author.Author;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.data.neo4j.core.schema.Relationship.Direction.INCOMING;
 import static org.springframework.data.neo4j.core.schema.Relationship.Direction.OUTGOING;
@@ -33,22 +36,21 @@ public class Book {
     private List<Genre> genres = new ArrayList<>();
 
 
-    public List<Genre> getGenres() {
-        return genres;
+    public List<String> getGenres() {
+        return genres.stream().map(Genre::getName).collect(Collectors.toList());
     }
 
     public void setGenres(List<Genre> genres) {
         this.genres = genres;
     }
 
-    public List<Author> getAuthors() {
-        return authors;
+    public List<String> getAuthors() {
+        return authors.stream().map(Author::getName).collect(Collectors.toList());
     }
 
     public void setAuthors(List<Author> authors) {
         this.authors = authors;
     }
-
 
     public Long getId() {
         return id;
@@ -128,5 +130,23 @@ public class Book {
 
     public void setPublished_date(String published_date) {
         this.published_date = published_date;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "id:" + id +
+                ", ISBN:" + ISBN +
+                ", pageCount:" + pageCount +
+                ", rate:" + rate +
+                ", voteCount:" + voteCount +
+                ", publisher:'" + publisher + '\'' +
+                ", description:'" + description + '\'' +
+                ", language:'" + language + '\'' +
+                ", title:'" + title + '\'' +
+                ", published_date:'" + published_date + '\'' +
+                ", authors:" + authors +
+                ", genres:" + genres +
+                '}';
     }
 }
