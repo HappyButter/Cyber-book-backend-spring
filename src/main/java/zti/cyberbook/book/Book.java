@@ -60,8 +60,8 @@ public class Book {
         this.id = id;
     }
 
-    public Double getISBN() {
-        return ISBN;
+    public long getISBN() {
+        return ISBN.longValue();
     }
 
     public void setISBN(Double ISBN) {

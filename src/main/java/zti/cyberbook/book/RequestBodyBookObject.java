@@ -1,7 +1,6 @@
 package zti.cyberbook.book;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class RequestBodyBookObject {
     private Long ISBN;

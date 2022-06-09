@@ -8,6 +8,7 @@ import zti.cyberbook.author.Author;
 import zti.cyberbook.author.AuthorRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -99,4 +100,23 @@ public class BookService {
         return bookRepository.save(book.get());
     }
 
+    public List<Book> getBestRatedBooks() {
+
+        List<Long> ids = bookRepository.findBestRatedBooks()
+                .stream()
+                .map(Book::getId)
+                .collect(Collectors.toList());
+
+        return bookRepository.findBooksByIdIn(ids);
+    }
+
+    public Book getBookByISBN(String isbn) {
+        Optional<Book> book = bookRepository.findBookByISBN(Double.parseDouble(isbn));
+        return book.orElse(null);
+    }
+
+    public List<Book> getBooksByTitle(String title) {
+        return bookRepository.findBooksByTitleLikeIgnoreCase(title);
+
+    }
 }
