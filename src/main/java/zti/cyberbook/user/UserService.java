@@ -3,7 +3,9 @@ package zti.cyberbook.user;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -13,33 +15,50 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public HashMap<String, Object> registerUser(User user) {
-        if (user == null) return null;
-        if (userRepository.existsByEmail(user.getEmail())) return null;
-
-        HashMap<String, Object> result = new HashMap<>();
-        User newUser = userRepository.save(user);
-
-        result.put("id",newUser.getId());
-        result.put("email",newUser.getEmail());
-        result.put("firstName",newUser.getFirstName());
-        result.put("lastName",newUser.getLastName());
-
-        return result;
+    boolean follow(String userId, String userToFollowId) {
+        return userRepository.followUser(userId, userToFollowId) != null;
     }
 
-    public HashMap<String, Object> loginUser(String email, String password) {
-
-        HashMap<String, Object> result = new HashMap<>();
-        User user = userRepository.findUserByEmailAndAndPassword(email, password);
-
-        if (user == null) return null;
-
-        result.put("id", user.getId());
-        result.put("email", user.getEmail());
-        result.put("firstName", user.getFirstName());
-        result.put("lastName", user.getLastName());
-
-        return result;
+    public boolean unfollow(String userId, String userToFollowId) {
+        return userRepository.unfollowUser(userId, userToFollowId) == null;
     }
+
+    List<Map<String, Object>> getAllUsersByName(String name, String userId) {
+
+        List<String> ids = getUserIdsWithName(name);
+        ids.removeIf(id -> id.equals(userId));
+
+        User clientUser = userRepository.findUserById(userId);
+
+        return userRepository.findUsersByIdIn(ids)
+                .stream()
+                .map(user -> {
+                    Map<String, Object> mappedUser = new HashMap<>();
+
+                    boolean isFollowed = isFollowedUserByClient(clientUser, user);
+
+                    mappedUser.put("isFollowed", isFollowed);
+                    mappedUser.put("firstName", user.getFirstName());
+                    mappedUser.put("lastName", user.getLastName());
+                    mappedUser.put("id", user.getId());
+
+                    return mappedUser;
+                } )
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getUserIdsWithName(String name) {
+        List<String> ids = userRepository.findAllUsersByName(name)
+                .stream()
+                .map(User::getId)
+                .collect(Collectors.toList());
+        return ids;
+    }
+
+    private boolean isFollowedUserByClient(User clientUser, User user) {
+        return clientUser.getFollowedUsers()
+                .stream()
+                .anyMatch(followedUser -> followedUser.getId().equals(user.getId()));
+    }
+
 }

@@ -1,21 +1,15 @@
 package zti.cyberbook.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.parsing.Problem;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
+@RequestMapping("/user")
 public class UserController {
-
     private final UserService userService;
 
     @Autowired
@@ -23,22 +17,19 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    ResponseEntity<?> register(@RequestBody User user) {
-        HashMap<String, Object> newUser =  userService.registerUser(user);
-
-        if(newUser == null) return ResponseEntity.status(HttpStatus.CONFLICT).body("User with such an email already exists");
-
-        return ResponseEntity.ok(newUser);
+    @PostMapping("/follow")
+    boolean followUser(@RequestBody Map<String, String> reqBody) {
+        return userService.follow(reqBody.get("userId"), reqBody.get("userToFollowId"));
+    }
+    @PostMapping("/unfollow")
+    boolean unfollowUser(@RequestBody Map<String, String> reqBody) {
+        return userService.unfollow(reqBody.get("userId"), reqBody.get("userToFollowId"));
     }
 
-    @PostMapping("/login")
-    ResponseEntity<?> login(@RequestBody Map<String, String> reqBody) {
-        HashMap<String, Object> user = userService.loginUser(reqBody.get("email"), reqBody.get("password"));
-
-        if(user == null) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email or password");
-
-        return ResponseEntity.ok(user);
+    @PostMapping("/name")
+    List<Map<String, Object>> getUsersByName(@RequestBody Map<String, String> reqBody) {
+        String name = reqBody.get("name");
+        String userId = reqBody.get("userId");
+        return userService.getAllUsersByName(name, userId);
     }
-
 }

@@ -3,23 +3,36 @@ package zti.cyberbook.user;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
+import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
+import zti.cyberbook.book.Book;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.data.neo4j.core.schema.Relationship.Direction.OUTGOING;
 
 @Node
 public class User {
-
-    @Id @GeneratedValue
-    private Long id;
-
+    @Id @GeneratedValue(UUIDStringGenerator.class)
+    private String id;
     private String firstName;
     private String lastName;
     private String email;
     private String password;
 
-    public long getId() {
+    @Relationship(type = "FOLLOWS", direction = OUTGOING)
+    private List<User> followedUsers = new ArrayList<>();
+
+    @Relationship(type = "REVIEWED", direction = OUTGOING)
+    private List<Book> reviewedBooks = new ArrayList<>();
+
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -53,6 +66,22 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<User> getFollowedUsers() {
+        return followedUsers;
+    }
+
+    public void setFollowedUsers(List<User> followedUsers) {
+        this.followedUsers = followedUsers;
+    }
+
+    public List<Book> getReviewedBooks() {
+        return reviewedBooks;
+    }
+
+    public void setReviewedBooks(List<Book> reviewedBooks) {
+        this.reviewedBooks = reviewedBooks;
     }
 
     @Override
