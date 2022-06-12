@@ -1,7 +1,10 @@
 package zti.cyberbook.user;
 
+import org.neo4j.driver.Value;
+import org.neo4j.driver.internal.value.ListValue;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,4 +64,16 @@ public class UserService {
                 .anyMatch(followedUser -> followedUser.getId().equals(user.getId()));
     }
 
+    public List<Map<String, Object>> getFollowedUsersReviews(String userId) {
+        List<ListValue> res = userRepository.getFollowedUsersReviews(userId);
+
+        List<Map<String, Object>> resMapped = new ArrayList<>();
+        for (ListValue listValue : res) {
+            for(Value value : listValue.values()) {
+                resMapped.add(value.asMap());
+            }
+        }
+
+        return resMapped;
+    }
 }

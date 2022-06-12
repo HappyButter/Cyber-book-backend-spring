@@ -1,11 +1,14 @@
 package zti.cyberbook.book;
 
+import org.neo4j.driver.Value;
+import org.neo4j.driver.internal.value.ListValue;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import zti.cyberbook.genre.Genre;
-import zti.cyberbook.genre.GenreRepository;
 import zti.cyberbook.author.Author;
 import zti.cyberbook.author.AuthorRepository;
+import zti.cyberbook.genre.Genre;
+import zti.cyberbook.genre.GenreRepository;
+import zti.cyberbook.review.Review;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -118,5 +121,25 @@ public class BookService {
     public List<Book> getBooksByTitle(String title) {
         return bookRepository.findBooksByTitleLikeIgnoreCase(title);
 
+    }
+
+    @Transactional
+    public boolean addBookReview(Review review) {
+        bookRepository.addReview(review.getUserId(), review.getISBN(), review.getRate(), review.getReview(), System.currentTimeMillis());
+        bookRepository.updateBookRate(review.getISBN());
+        return true;
+    }
+
+    public List<Map<String, Object>> getBookReviewsByISBN(String isbn) {
+        List<ListValue> res = bookRepository.getBookReviewsByISBN(Double.parseDouble(isbn));
+
+        List<Map<String, Object>> resMapped = new ArrayList<>();
+        for (ListValue listValue : res) {
+            for(Value value : listValue.values()) {
+                resMapped.add(value.asMap());
+            }
+        }
+
+        return resMapped;
     }
 }

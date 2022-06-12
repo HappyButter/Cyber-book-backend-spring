@@ -32,4 +32,10 @@ public class UserController {
         String userId = reqBody.get("userId");
         return userService.getAllUsersByName(name, userId);
     }
+
+    @PostMapping("/followed")
+    List<Map<String, Object>> getFollowedUsersReviews(@RequestBody Map<String, String> reqBody) {
+        String userId = reqBody.get("userId");
+        return userService.getFollowedUsersReviews(userId);
+    }
 }

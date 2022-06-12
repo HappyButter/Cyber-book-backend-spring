@@ -1,5 +1,6 @@
 package zti.cyberbook.user;
 
+import org.neo4j.driver.internal.value.ListValue;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 
@@ -29,4 +30,10 @@ public interface UserRepository extends Neo4jRepository<User, String> {
     List<User> findUsersByIdIn(List<String> ids);
 
     User findUserById(String id);
+
+    @Query("MATCH (u:User {id: $userId})-[:FOLLOWS]->(u2:User)-[r:REVIEWED]->(b:Book)<-[:WROTE]-(a:Author)" +
+            " WITH collect({firstName: u2.firstName, lastName: u2.lastName, authorId: u2.id}) as author, " +
+            " collect({ISBN: b.ISBN, rate: b.rate, title: b.title, author: a.name}) as book, r" +
+            " RETURN collect({author: author, book: book, rate: r.rate, review: r.review, creationDate: r.creationDate})")
+    List<ListValue> getFollowedUsersReviews(String userId);
 }

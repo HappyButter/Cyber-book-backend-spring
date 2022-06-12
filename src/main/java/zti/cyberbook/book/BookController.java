@@ -1,13 +1,8 @@
 package zti.cyberbook.book;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import zti.cyberbook.review.Review;
 
 import java.util.List;
 import java.util.Map;
@@ -41,16 +36,23 @@ public class BookController {
     }
 
     @GetMapping("/isbn/{isbn}")
-    Book getBookByISBN(@PathVariable String isbn){
+    Book getBookByISBN(@PathVariable String isbn) {
         return bookService.getBookByISBN(isbn);
     }
 
+    @GetMapping("/reviews/{isbn}")
+    List<Map<String, Object>> getBookReviewsByISBN(@PathVariable String isbn) {
+        return bookService.getBookReviewsByISBN(isbn);
+    }
+
     @PostMapping("/title")
-    List<Book> getBooksByTitle(@RequestBody Map<String, String> reqBody){
+    List<Book> getBooksByTitle(@RequestBody Map<String, String> reqBody) {
         String title = reqBody.get("title");
         return bookService.getBooksByTitle(title);
     }
 
-//    @PostMapping("/review")
-//    boolean addBookReview(@RequestBody Map<String, String> reqBody)
+    @PostMapping("/review")
+    boolean addBookReview(@RequestBody Review review) {
+        return bookService.addBookReview(review);
+    }
 }
